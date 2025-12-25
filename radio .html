@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Turmequé FM 🎙 Radio en Vivo</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Alegreya:wght@400;700&family=Montserrat:wght@300;600&display=swap" rel="stylesheet">
+
+<style>
+:root {
+  --bg: #0c2d36;
+  --accent: #f9d3a4;
+  --card: rgba(18, 60, 71, 0.85);
+  --glass: rgba(249, 211, 164, 0.15);
+}
+
+* { margin:0; padding:0; box-sizing:border-box; }
+
+body {
+  background: radial-gradient(circle at center, #123c47 0%, #0c2d36 100%);
+  color: var(--accent);
+  font-family: 'Alegreya', serif;
+  min-height: 100vh;
+  display: flex;
+  overflow-x: hidden;
+}
+
+/* ONDAS DE FONDO SUTILES */
+.waves { position:fixed; inset:0; z-index:0; opacity: 0.15; pointer-events: none; }
+.wave {
+  position: absolute;
+  top: -50%; left: -50%; width: 200%; height: 200%;
+  background: radial-gradient(circle, var(--accent) 0%, transparent 50%);
+  animation: spin 60s linear infinite;
+}
+@keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+
+.main { flex: 1; display: flex; align-items: center; justify-content: center; z-index: 2; padding: 20px; }
+
+.player {
+  background: var(--card);
+  backdrop-filter: blur(25px);
+  padding: 40px;
+  border-radius: 45px;
+  text-align: center;
+  width: 100%;
+  max-width: 400px;
+  border: 1px solid rgba(249, 211, 164, 0.2);
+  box-shadow: 0 40px 100px rgba(0,0,0,0.6);
+}
+
+.logo img { 
+    width: 160px; border-radius: 25px; 
+    margin-bottom: 15px; border: 2px solid var(--accent);
+    box-shadow: 0 10px 20px rgba(0,0,0,0.3);
+}
+
+h1 { font-size: 2.4rem; letter-spacing: 1px; margin-bottom: 5px; }
+.slogan { font-family: 'Montserrat', sans-serif; font-size: 10px; text-transform: uppercase; letter-spacing: 3px; opacity: 0.8; margin-bottom: 25px; }
+
+/* VISUALIZADOR REALISTA */
+.visualizer {
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+  gap: 4px;
+  height: 60px;
+  margin-bottom: 30px;
+}
+.bar {
+  width: 8px;
+  height: 10px;
+  background: var(--accent);
+  border-radius: 4px;
+  /* Animación base pausada */
+  animation: sound 0s infinite alternate cubic-bezier(0.45, 0.05, 0.55, 0.95);
+  animation-play-state: paused;
+}
+
+/* Tiempos y alturas diferentes para simular audio real */
+.bar:nth-child(1) { animation-duration: 0.4s; }
+.bar:nth-child(2) { animation-duration: 0.7s; }
+.bar:nth-child(3) { animation-duration: 0.5s; }
+.bar:nth-child(4) { animation-duration: 0.9s; }
+.bar:nth-child(5) { animation-duration: 0.6s; }
+.bar:nth-child(6) { animation-duration: 0.8s; }
+.bar:nth-child(7) { animation-duration: 0.5s; }
+
+@keyframes sound {
+  0% { height: 10px; opacity: 0.5; }
+  100% { height: 100%; opacity: 1; box-shadow: 0 0 15px var(--accent); }
+}
+
+.play-btn {
+  width: 85px; height: 85px; border-radius: 50%;
+  border: none; background: var(--accent);
+  font-size: 32px; cursor: pointer; color: #0c2d36;
+  transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+}
+.play-btn:hover { transform: scale(1.1); }
+
+.status { font-family: 'Montserrat', sans-serif; font-size: 11px; margin: 25px 0; font-weight: 600; letter-spacing: 2px; }
+
+/* SELECTOR DE SERVIDORES */
+.server-selector { margin-top: 30px; padding-top: 25px; border-top: 1px solid rgba(249, 211, 164, 0.15); }
+.server-selector p { font-size: 11px; margin-bottom: 15px; font-style: italic; opacity: 0.7; line-height: 1.5; }
+.server-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.btn-server {
+    background: var(--glass);
+    border: 1px solid rgba(249, 211, 164, 0.2);
+    color: var(--accent);
+    padding: 12px;
+    border-radius: 15px;
+    cursor: pointer;
+    font-size: 10px;
+    font-weight: 600;
+    transition: all 0.3s;
+}
+.btn-server.active { background: var(--accent); color: #0c2d36; box-shadow: 0 0 15px rgba(249, 211, 164, 0.2); }
+
+/* PROGRAMACIÓN */
+.schedule {
+  width: 350px; padding: 45px;
+  background: rgba(5, 20, 25, 0.98);
+  z-index: 2; border-left: 1px solid rgba(249, 211, 164, 0.1);
+}
+.schedule h2 { font-size: 1.8rem; margin-bottom: 30px; border-bottom: 2px solid var(--accent); padding-bottom: 12px; letter-spacing: 2px; }
+.program { margin-bottom: 25px; }
+.program span { font-weight: 700; color: var(--accent); display: block; font-size: 1.1rem; }
+.program small { display:block; opacity: 0.7; font-size: 0.95rem; margin-top: 6px; line-height: 1.4; }
+
+@media(max-width:850px){
+  body { flex-direction: column; overflow-y: auto; }
+  .schedule { width: 100%; border-left: none; padding: 30px; }
+  .player { padding: 30px; }
+}
+</style>
+</head>
+<body>
+
+<div class="waves"><div class="wave"></div></div>
+
+<div class="main">
+  <div class="player">
+    <div class="logo"><img src="logo.png" alt="Turmequé FM"></div>
+    <h1>Turmequé FM</h1>
+    <p class="slogan">Música para todas las generaciones</p>
+
+    <div class="visualizer" id="visualizer">
+      <div class="bar"></div><div class="bar"></div><div class="bar"></div>
+      <div class="bar"></div><div class="bar"></div><div class="bar"></div>
+      <div class="bar"></div>
+    </div>
+
+    <button class="play-btn" id="playBtn">▶</button>
+    <div class="status" id="statText">SISTEMA LISTO</div>
+
+    <div class="server-selector">
+        <p>* Si experimenta cortes, pruebe alternar entre nuestros servidores de respaldo:</p>
+        <div class="server-grid">
+            <button class="btn-server active" onclick="setServer(0, this)">SERVIDOR 01</button>
+            <button class="btn-server" onclick="setServer(1, this)">SERVIDOR 02</button>
+            <button class="btn-server" onclick="setServer(2, this)">SERVIDOR 03</button>
+            <button class="btn-server" onclick="setServer(3, this)">SERVIDOR 04</button>
+        </div>
+    </div>
+  </div>
+</div>
+
+<aside class="schedule">
+  <h2>📅 Programación</h2>
+  <div class="program"><span>22:00 – 4:00</span><small>Noches estrelladas (baladas americanas y en español)</small></div>
+  <div class="program"><span>4:00 – 6:00</span><small>Lo nuestro (cuerda colombiana)</small></div>
+  <div class="program"><span>14:00 – 16:00</span><small>La tarde aún es joven (rock alternativo y pop)</small></div>
+  <div class="program"><span>20:00 – 22:00</span><small>Pa’ olvidar las penas (vallenato romántico)</small></div>
+</aside>
+
+<div id="radioEngine" style="display:none"></div>
+
+<script>
+const urls = [
+    "https://radiocreativa.radio12345.com",
+    "https://radiocreativa.radio12345.com",
+    "https://radiocreativa.radio12345.com",
+    "https://radiocreativa.radio12345.com"
+];
+
+let currentSrv = 0;
+let isPlaying = false;
+
+const engine = document.getElementById('radioEngine');
+const playBtn = document.getElementById('playBtn');
+const txt = document.getElementById('statText');
+const bars = document.querySelectorAll('.bar');
+
+function setServer(idx, el) {
+    currentSrv = idx;
+    document.querySelectorAll('.btn-server').forEach(b => b.classList.remove('active'));
+    el.classList.add('active');
+    if(isPlaying) {
+        startRadio(); // Reinicia con el nuevo server
+    } else {
+        txt.textContent = "SERVIDOR " + (idx + 1) + " SELECCIONADO";
+    }
+}
+
+function startRadio() {
+    engine.innerHTML = `<iframe src="${urls[currentSrv]}/" allow="autoplay"></iframe>`;
+    playBtn.textContent = "⏸";
+    txt.textContent = "🔴 EN VIVO - SERVIDOR " + (currentSrv + 1);
+    bars.forEach(b => {
+        b.style.animationName = 'sound';
+        b.style.animationPlayState = 'running';
+    });
+    isPlaying = true;
+}
+
+function stopRadio() {
+    engine.innerHTML = "";
+    playBtn.textContent = "▶";
+    txt.textContent = "RADIO EN PAUSA";
+    bars.forEach(b => {
+        b.style.animationPlayState = 'paused';
+        b.style.height = '10px';
+    });
+    isPlaying = false;
+}
+
+playBtn.onclick = () => {
+    if(!isPlaying) startRadio();
+    else stopRadio();
+};
+</script>
+
+</body>
+</html>
